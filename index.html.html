@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Mưa Từ Vựng HSK</title>
+<style>
+:root{
+  --bg1:#070b1a;--bg2:#0d1630;--card:#122044;--card2:#0f1a38;--line:#27407a;
+  --text:#e8eefc;--muted:#8fa0c8;--cyan:#5fd4ff;--green:#4dffa6;--yellow:#ffd84a;--red:#ff5d6c;--pink:#ff8ad8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg1);color:var(--text);
+  font-family:"Segoe UI","Noto Sans","PingFang SC","Microsoft YaHei",system-ui,sans-serif;overflow:hidden}
+body{background:radial-gradient(1200px 700px at 20% -10%,#16275a 0%,transparent 60%),radial-gradient(900px 600px at 100% 110%,#1b1450 0%,transparent 55%),var(--bg1)}
+button{font:inherit;color:inherit;cursor:pointer;border:0}
+.screen{position:absolute;inset:0;display:none;overflow:auto}
+.screen.active{display:block}
+
+/* ---------- START ---------- */
+#start{padding:20px 16px 40px}
+.wrap{max-width:1040px;margin:0 auto}
+.brand{text-align:center;margin:10px 0 22px}
+.brand .zh{font-size:46px;font-weight:800;letter-spacing:.12em;color:var(--cyan);text-shadow:0 0 24px rgba(95,212,255,.55)}
+.brand h1{font-size:28px;margin-top:2px;font-weight:700}
+.brand p{color:var(--muted);margin-top:6px;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1.15fr;gap:18px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.panel{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:18px;padding:20px}
+.panel h2{font-size:15px;color:var(--cyan);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+label.f{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+#nameInput{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--line);background:#0a1330;color:var(--text);font-size:17px;outline:0}
+#nameInput:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(95,212,255,.18)}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 18px}
+.lv{background:#0a1330;border:1.5px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center;transition:.15s}
+.lv b{display:block;font-size:22px}
+.lv span{font-size:12px;color:var(--muted)}
+.lv:hover{border-color:var(--cyan)}
+.lv.sel{border-color:var(--yellow);background:#1a2250;box-shadow:0 0 0 3px rgba(255,216,74,.15)}
+.lv.sel b{color:var(--yellow)}
+.go{width:100%;padding:15px;border-radius:14px;font-size:18px;font-weight:700;background:linear-gradient(90deg,#2bb7ff,#6b7bff);color:#fff;box-shadow:0 8px 24px rgba(60,120,255,.35)}
+.go:hover{filter:brightness(1.08)}
+.go:disabled{opacity:.45;cursor:not-allowed}
+.err{color:var(--red);font-size:13px;min-height:18px;margin:6px 0 4px}
+.howto{margin-top:16px;font-size:13px;color:var(--muted);line-height:1.6}
+.howto b{color:var(--text)}
+.howto .warn{color:var(--yellow)}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{padding:7px 12px;border-radius:999px;background:#0a1330;border:1px solid var(--line);font-size:13px;color:var(--muted)}
+.tab.on{background:var(--cyan);color:#06142e;border-color:var(--cyan);font-weight:700}
+table.lb{width:100%;border-collapse:collapse;font-size:14px}
+table.lb th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:4px 8px;font-weight:600}
+table.lb td{padding:9px 8px;border-top:1px solid rgba(39,64,122,.55)}
+table.lb td.r{text-align:right;font-variant-numeric:tabular-nums}
+table.lb tr.me td{background:rgba(255,216,74,.1)}
+.medal{display:inline-block;width:26px;text-align:center;font-weight:800}
+.rk1{color:#ffd84a}.rk2{color:#d5dcec}.rk3{color:#e8a36b}
+.lbname{font-weight:600}
+.chip{font-size:11px;color:var(--muted);margin-left:6px}
+.lbstat{font-size:12px;color:var(--muted);margin:-2px 0 10px}
+.empty{color:var(--muted);text-align:center;padding:26px 0;font-size:14px}
+.lbtools{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.mini{padding:7px 11px;border-radius:9px;background:#0a1330;border:1px solid var(--line);font-size:12px;color:var(--muted)}
+.mini:hover{color:var(--text);border-color:var(--cyan)}
+
+/* ---------- GAME ---------- */
+#game{overflow:hidden;background:linear-gradient(180deg,#05081a 0%,#0a1230 60%,#101a45 100%)}
+#rain{position:absolute;inset:0;width:100%;height:100%}
+.hud{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:10px 14px;background:linear-gradient(180deg,rgba(5,8,26,.92),rgba(5,8,26,0))}
+.hud .sc{font-size:26px;font-weight:800;color:#fff;min-width:96px;font-variant-numeric:tabular-nums}
+.hud .sc small{display:block;font-size:10px;color:var(--muted);letter-spacing:.1em;font-weight:600}
+.hud .mid{flex:1;text-align:center;font-size:14px;color:var(--muted);min-width:0}
+.hud .mid .mk{color:var(--text);font-weight:700}
+.hud .mid .last{display:block;margin-top:2px;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:20px}
+.hud .hearts{font-size:19px;letter-spacing:2px;white-space:nowrap}
+.hud .hearts .off{opacity:.2;filter:grayscale(1)}
+.hud .who{font-size:12px;color:var(--muted);text-align:right;line-height:1.3}
+.hud .who b{color:var(--yellow);font-size:14px}
+.ibtn{width:36px;height:36px;border-radius:10px;background:rgba(18,32,68,.85);border:1px solid var(--line);font-size:16px}
+.ibtn:hover{border-color:var(--cyan)}
+#field{position:absolute;left:0;right:0;top:64px;bottom:64px;overflow:hidden}
+.ground{position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,transparent,var(--red),transparent);opacity:.7}
+.card{position:absolute;left:0;top:0;padding:7px 14px 8px;border-radius:14px;background:rgba(14,30,72,.94);border:2px solid #3a6fd6;text-align:center;will-change:transform;box-shadow:0 6px 18px rgba(0,0,0,.45);white-space:nowrap}
+.card .vi{font-size:17px;font-weight:700;line-height:1.25}
+.card .py{margin-top:3px;font-size:21px;font-weight:700;font-family:"Consolas","SFMono-Regular",monospace;letter-spacing:.04em;display:flex;justify-content:center;gap:12px}
+.card .syl{display:inline-flex}
+.card .ch{display:inline-block;min-width:.62em;text-align:center;color:#5c78b8;border-bottom:2.5px solid #4766ad;margin:0 1px;line-height:1.15}
+.card .ch.hint{color:var(--cyan);border-bottom-color:var(--cyan);opacity:.85}
+.card .ch.on{color:var(--yellow);border-bottom-color:var(--yellow)}
+.card.locked{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(255,216,74,.22),0 6px 18px rgba(0,0,0,.45)}
+.card.near{border-color:var(--red)}
+.card.shake{animation:shake .25s}
+@keyframes shake{25%{margin-left:-6px}75%{margin-left:6px}}
+.pop{position:absolute;left:0;top:0;pointer-events:none;font-weight:800;white-space:nowrap;text-shadow:0 0 12px currentColor;animation:pop 1.3s ease-out forwards}
+.pop.ok{color:var(--green);font-size:24px}
+.pop.bad{color:var(--red);font-size:20px}
+@keyframes pop{0%{opacity:0;scale:.6}12%{opacity:1;scale:1.1}25%{scale:1}80%{opacity:1}100%{opacity:0;translate:0 -34px}}
+.bar{position:absolute;left:0;right:0;bottom:0;z-index:5;height:64px;display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 14px;background:linear-gradient(0deg,rgba(5,8,26,.95),rgba(5,8,26,0))}
+.typed{min-width:220px;max-width:70%;text-align:center;padding:9px 18px;border-radius:12px;background:rgba(10,19,48,.9);border:1.5px solid var(--line);font-family:Consolas,monospace;font-size:21px;letter-spacing:.08em;color:var(--yellow);min-height:42px}
+.typed.ph{color:var(--muted);font-family:inherit;font-size:14px;letter-spacing:0;line-height:22px}
+.typed.bad{border-color:var(--red);animation:shake .25s}
+.combo{font-weight:800;color:var(--pink);min-width:90px;font-size:18px;text-align:left}
+.prog{position:absolute;left:0;top:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--green));z-index:6;width:0;transition:width .25s}
+#hiddenIn{position:absolute;left:-9999px;top:auto;opacity:0;width:1px;height:1px}
+.overlay{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(4,7,20,.78);backdrop-filter:blur(3px);text-align:center;padding:20px}
+.overlay.show{display:flex}
+.overlay h3{font-size:30px;margin-bottom:8px}
+.overlay p{color:var(--muted);margin-bottom:18px}
+.overlay .btn{padding:12px 26px;border-radius:12px;background:linear-gradient(90deg,#2bb7ff,#6b7bff);font-weight:700;font-size:16px;margin:4px}
+.overlay .btn.alt{background:#0a1330;border:1px solid var(--line)}
+#count{font-size:120px;font-weight:900;color:var(--cyan);text-shadow:0 0 40px rgba(95,212,255,.7)}
+
+/* ---------- END ---------- */
+#end{padding:20px 16px 40px}
+.res{text-align:center}
+.res .big{font-size:60px;font-weight:900;color:var(--yellow);text-shadow:0 0 30px rgba(255,216,74,.4);font-variant-numeric:tabular-nums}
+.res .rank{font-size:18px;margin:4px 0 14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:#0a1330;border:1px solid var(--line);border-radius:12px;padding:10px}
+.stat b{display:block;font-size:22px}
+.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.review{max-height:260px;overflow:auto;text-align:left;margin-top:8px}
+.rv{display:flex;gap:10px;align-items:baseline;padding:7px 4px;border-top:1px solid rgba(39,64,122,.55)}
+.rv .h{font-size:22px;min-width:84px;color:var(--green)}
+.rv .p{color:var(--cyan);min-width:110px}
+.rv .m{color:var(--muted);font-size:14px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.row .go{width:auto;padding:13px 24px;font-size:16px}
+.row .go.alt{background:#0a1330;border:1px solid var(--line);box-shadow:none}
+</style>
+</head>
+<body>
+
+<!-- ============ START ============ -->
+<section id="start" class="screen active">
+ <div class="wrap">
+  <div class="brand">
+    <div class="zh">词语雨</div>
+    <h1>Mưa Từ Vựng HSK</h1>
+    <p>Đọc nghĩa đang rơi, nhớ ra từ và gõ pinyin để bắn hạ!</p>
+  </div>
+  <div class="grid">
+    <div class="panel">
+      <h2>Vào chơi</h2>
+      <label class="f" for="nameInput">Tên của em</label>
+      <input id="nameInput" maxlength="20" placeholder="Ví dụ: Minh Anh – 7A" autocomplete="off">
+      <div style="height:16px"></div>
+      <label class="f">Chọn cấp độ HSK</label>
+      <div class="levels" id="levels">
+        <button class="lv" data-lv="1"><b>HSK 1</b><span id="n1"></span></button>
+        <button class="lv" data-lv="2"><b>HSK 2</b><span id="n2"></span></button>
+        <button class="lv" data-lv="3"><b>HSK 3</b><span id="n3"></span></button>
+      </div>
+      <div class="err" id="err"></div>
+      <button class="go" id="goBtn">▶ Bắt đầu</button>
+      <div class="howto">
+        <b>Cách chơi:</b> mỗi ván có <b>3 màn × 30 từ</b>, mỗi màn 5 mạng ❤ (qua màn được hồi đủ mạng). Chữ rơi <b>nhanh dần</b> theo từng chặng và theo từng màn. Mỗi từ có <b>chữ cái đầu gợi ý</b> (màu xanh), em vẫn gõ đủ cả từ. Gõ pinyin của từ đang rơi (không cần gõ dấu thanh, <b>ü gõ là v hoặc u</b>). Từ chạm đáy sẽ mất 1 mạng. Gõ nhanh, đúng liên tục để được thêm điểm combo.<br>
+        <b>Phím:</b> <b>Backspace</b> xoá chữ vừa gõ · <b>Esc</b> bỏ chọn từ.<br>
+        <span class="warn">⚠ Nhớ tắt bộ gõ tiếng Việt (Unikey/Telex) khi chơi.</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>🏆 Bảng xếp hạng</h2>
+      <div class="tabs" id="lbTabs"></div>
+      <div class="lbstat" id="lbStat"></div>
+      <div id="lbBody"></div>
+      <div class="lbtools">
+        <button class="mini" id="btnExport">⬇ Xuất dữ liệu</button>
+        <button class="mini" id="btnImport">⬆ Nhập &amp; gộp</button>
+        <button class="mini" id="btnClear">🗑 Xoá dữ liệu máy này</button>
+        <input type="file" id="fileImport" accept=".json,application/json" hidden>
+      </div>
+    </div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section id="game" class="screen">
+  <canvas id="rain"></canvas>
+  <div class="prog" id="prog"></div>
+  <div class="hud">
+    <div class="sc"><small>ĐIỂM</small><span id="score">0</span></div>
+    <div class="mid"><span class="mk">Màn <span id="stg">1</span>/3 · Mốc <span id="mk">0</span>/30 · <span id="lvTag"></span></span><span class="last" id="last"></span></div>
+    <div class="hearts" id="hearts"></div>
+    <div class="who"><b id="who"></b><br><span id="whoLv"></span></div>
+    <button class="ibtn" id="btnPause" title="Tạm dừng">⏸</button>
+    <button class="ibtn" id="btnMute" title="Âm thanh">🔊</button>
+  </div>
+  <div id="field"><div class="ground"></div></div>
+  <div class="bar">
+    <div class="combo" id="combo"></div>
+    <div class="typed ph" id="typed">Gõ pinyin của từ đang rơi…</div>
+    <div class="combo" style="text-align:right" id="acc"></div>
+  </div>
+  <input id="hiddenIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <div class="overlay" id="ovCount"><div id="count">3</div></div>
+  <div class="overlay" id="ovStage"><h3 id="stTitle"></h3><p id="stText"></p><button class="btn" id="btnNext">Màn tiếp theo ▶</button></div>
+  <div class="overlay" id="ovPause">
+    <h3>⏸ Tạm dừng</h3><p>Game đang dừng.</p>
+    <div><button class="btn" id="btnResume">Tiếp tục</button><button class="btn alt" id="btnQuit">Thoát ván</button></div>
+  </div>
+</section>
+
+<!-- ============ END ============ -->
+<section id="end" class="screen">
+ <div class="wrap" style="max-width:820px">
+  <div class="panel res">
+    <div id="endTitle" style="font-size:20px;color:var(--cyan);font-weight:700"></div>
+    <div class="big" id="endScore">0</div>
+    <div class="rank" id="endRank"></div>
+    <div class="stats">
+      <div class="stat"><b id="sCorrect">0</b><span>Từ đúng</span></div>
+      <div class="stat"><b id="sAcc">0%</b><span>Chính xác</span></div>
+      <div class="stat"><b id="sCombo">0</b><span>Combo cao nhất</span></div>
+      <div class="stat"><b id="sTime">0s</b><span>Thời gian</span></div>
+    </div>
+    <div id="reviewWrap" style="display:none;text-align:left">
+      <h2 style="font-size:14px;color:var(--red);margin:10px 0 4px">Từ cần ôn lại</h2>
+      <div class="review" id="review"></div>
+    </div>
+    <div class="row">
+      <button class="go" id="btnAgain">↻ Chơi lại</button>
+      <button class="go alt" id="btnHome">🏆 Bảng xếp hạng / đổi cấp</button>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:16px">
+    <h2 id="endLbTitle">Bảng xếp hạng</h2>
+    <div id="endLb"></div>
+  </div>
+ </div>
+</section>
+
+<script>
+"use strict";
+/* ============ BẢNG XẾP HẠNG CHUNG (ONLINE) ============
+   Dán địa chỉ Firebase Realtime Database vào dòng dưới để cả lớp dùng chung 1 bảng xếp hạng,
+   điểm tự gửi lên ngay khi học sinh chơi xong. Ví dụ:
+   const ONLINE_DB = "https://ten-du-an-default-rtdb.asia-southeast1.firebasedatabase.app";
+   Để trống "" thì điểm chỉ lưu trên máy đang chơi. */
+const ONLINE_DB = "https://mua-tieng-trung-default-rtdb.asia-southeast1.firebasedatabase.app";
+/* ================= DỮ LIỆU TỪ VỰNG (汉字|pinyin|nghĩa) ================= */
+const RAW = {
+1: `爱|ài|yêu
+八|bā|tám
+爸爸|bàba|bố
+杯子|bēizi|cái cốc
+北京|Běijīng|Bắc Kinh
+本|běn|quyển (lượng từ)
+不客气|bú kèqi|đừng khách sáo
+不|bù|không
+菜|cài|món ăn, rau
+茶|chá|trà
+吃|chī|ăn
+出租车|chūzūchē|taxi
+打电话|dǎ diànhuà|gọi điện thoại
+大|dà|to, lớn
+的|de|của
+点|diǎn|giờ; chút
+电脑|diànnǎo|máy tính
+电视|diànshì|ti vi
+电影|diànyǐng|phim
+东西|dōngxi|đồ vật
+都|dōu|đều
+读|dú|đọc
+对不起|duìbuqǐ|xin lỗi
+多|duō|nhiều
+多少|duōshao|bao nhiêu
+儿子|érzi|con trai
+二|èr|hai
+饭馆|fànguǎn|nhà hàng
+飞机|fēijī|máy bay
+分钟|fēnzhōng|phút
+高兴|gāoxìng|vui mừng
+个|gè|cái (lượng từ)
+工作|gōngzuò|công việc
+狗|gǒu|con chó
+汉语|Hànyǔ|tiếng Hán
+好|hǎo|tốt
+号|hào|ngày, số
+喝|hē|uống
+和|hé|và
+很|hěn|rất
+后面|hòumiàn|phía sau
+回|huí|về
+会|huì|biết, sẽ
+几|jǐ|mấy
+家|jiā|nhà
+叫|jiào|gọi, tên là
+今天|jīntiān|hôm nay
+九|jiǔ|chín
+开|kāi|mở, lái
+看|kàn|xem, nhìn
+看见|kànjiàn|nhìn thấy
+块|kuài|đồng (tiền)
+来|lái|đến
+老师|lǎoshī|giáo viên
+了|le|rồi
+冷|lěng|lạnh
+里|lǐ|bên trong
+六|liù|sáu
+妈妈|māma|mẹ
+吗|ma|không (nghi vấn)
+买|mǎi|mua
+猫|māo|con mèo
+没关系|méi guānxi|không sao
+没有|méiyǒu|không có
+米饭|mǐfàn|cơm
+明天|míngtiān|ngày mai
+名字|míngzi|tên
+哪|nǎ|nào
+哪儿|nǎr|ở đâu
+那|nà|kia, đó
+呢|ne|nhỉ, thế
+能|néng|có thể
+你|nǐ|bạn
+年|nián|năm
+女儿|nǚ'ér|con gái
+朋友|péngyou|bạn bè
+漂亮|piàoliang|xinh đẹp
+苹果|píngguǒ|quả táo
+七|qī|bảy
+前面|qiánmiàn|phía trước
+钱|qián|tiền
+请|qǐng|mời, xin
+去|qù|đi
+热|rè|nóng
+人|rén|người
+认识|rènshi|quen biết
+三|sān|ba
+商店|shāngdiàn|cửa hàng
+上|shàng|trên
+上午|shàngwǔ|buổi sáng
+少|shǎo|ít
+谁|shéi|ai
+什么|shénme|cái gì
+十|shí|mười
+时候|shíhou|lúc, khi
+是|shì|là
+书|shū|sách
+水|shuǐ|nước
+水果|shuǐguǒ|trái cây
+睡觉|shuìjiào|ngủ
+说|shuō|nói
+四|sì|bốn
+岁|suì|tuổi
+他|tā|anh ấy
+她|tā|cô ấy
+太|tài|quá
+天气|tiānqì|thời tiết
+听|tīng|nghe
+同学|tóngxué|bạn học
+喂|wèi|alo
+我|wǒ|tôi
+我们|wǒmen|chúng tôi
+五|wǔ|năm
+喜欢|xǐhuan|thích
+下|xià|dưới
+下午|xiàwǔ|buổi chiều
+下雨|xiàyǔ|trời mưa
+先生|xiānsheng|ông, ngài
+现在|xiànzài|bây giờ
+想|xiǎng|muốn, nhớ
+小|xiǎo|nhỏ
+小姐|xiǎojiě|cô, tiểu thư
+些|xiē|một vài
+写|xiě|viết
+谢谢|xièxie|cảm ơn
+星期|xīngqī|tuần
+学生|xuésheng|học sinh
+学习|xuéxí|học tập
+学校|xuéxiào|trường học
+一|yī|một
+一点儿|yìdiǎnr|một chút
+衣服|yīfu|quần áo
+医生|yīshēng|bác sĩ
+医院|yīyuàn|bệnh viện
+椅子|yǐzi|cái ghế
+有|yǒu|có
+月|yuè|tháng
+再见|zàijiàn|tạm biệt
+在|zài|ở, đang
+怎么|zěnme|thế nào, sao
+怎么样|zěnmeyàng|như thế nào
+这|zhè|này
+中国|Zhōngguó|Trung Quốc
+中午|zhōngwǔ|buổi trưa
+住|zhù|ở, sống
+桌子|zhuōzi|cái bàn
+字|zì|chữ
+昨天|zuótiān|hôm qua
+坐|zuò|ngồi
+做|zuò|làm`,
+2: `吧|ba|nhé, đi
+白|bái|trắng
+百|bǎi|trăm
+帮助|bāngzhù|giúp đỡ
+报纸|bàozhǐ|báo
+比|bǐ|so với
+别|bié|đừng
+长|cháng|dài
+唱歌|chàng gē|hát
+出|chū|ra
+穿|chuān|mặc
+次|cì|lần
+从|cóng|từ
+错|cuò|sai
+打篮球|dǎ lánqiú|chơi bóng rổ
+大家|dàjiā|mọi người
+到|dào|đến
+得|de|được (bổ ngữ)
+等|děng|đợi
+弟弟|dìdi|em trai
+第一|dì yī|thứ nhất
+懂|dǒng|hiểu
+对|duì|đúng
+房间|fángjiān|phòng
+非常|fēicháng|vô cùng
+服务员|fúwùyuán|nhân viên phục vụ
+高|gāo|cao
+告诉|gàosu|nói cho biết
+哥哥|gēge|anh trai
+给|gěi|cho
+公共汽车|gōnggòng qìchē|xe buýt
+公司|gōngsī|công ty
+贵|guì|đắt
+过|guo|đã từng
+还|hái|còn, vẫn
+孩子|háizi|đứa trẻ
+好吃|hǎochī|ngon
+黑|hēi|đen
+红|hóng|đỏ
+火车站|huǒchēzhàn|ga tàu hỏa
+机场|jīchǎng|sân bay
+鸡蛋|jīdàn|trứng gà
+件|jiàn|cái (áo...)
+教室|jiàoshì|lớp học
+姐姐|jiějie|chị gái
+介绍|jièshào|giới thiệu
+进|jìn|vào
+近|jìn|gần
+就|jiù|liền, thì
+觉得|juéde|cảm thấy
+咖啡|kāfēi|cà phê
+开始|kāishǐ|bắt đầu
+考试|kǎoshì|thi
+可能|kěnéng|có thể
+可以|kěyǐ|được
+课|kè|bài học
+快|kuài|nhanh
+快乐|kuàilè|vui vẻ
+累|lèi|mệt
+离|lí|cách
+两|liǎng|hai
+路|lù|đường
+旅游|lǚyóu|du lịch
+卖|mài|bán
+慢|màn|chậm
+忙|máng|bận
+每|měi|mỗi
+妹妹|mèimei|em gái
+门|mén|cửa
+面条|miàntiáo|mì sợi
+男|nán|nam
+您|nín|ngài
+牛奶|niúnǎi|sữa bò
+女|nǚ|nữ
+旁边|pángbiān|bên cạnh
+跑步|pǎobù|chạy bộ
+便宜|piányi|rẻ
+票|piào|vé
+妻子|qīzi|vợ
+起床|qǐchuáng|thức dậy
+千|qiān|nghìn
+铅笔|qiānbǐ|bút chì
+晴|qíng|nắng
+去年|qùnián|năm ngoái
+让|ràng|để, bảo
+日|rì|ngày
+上班|shàngbān|đi làm
+身体|shēntǐ|cơ thể
+生病|shēngbìng|bị ốm
+生日|shēngrì|sinh nhật
+时间|shíjiān|thời gian
+事情|shìqing|sự việc
+手表|shǒubiǎo|đồng hồ đeo tay
+手机|shǒujī|điện thoại di động
+说话|shuōhuà|nói chuyện
+送|sòng|tặng, tiễn
+虽然|suīrán|tuy rằng
+但是|dànshì|nhưng
+它|tā|nó
+踢足球|tī zúqiú|đá bóng
+题|tí|câu hỏi, đề
+跳舞|tiàowǔ|nhảy múa
+外|wài|bên ngoài
+完|wán|xong
+玩|wán|chơi
+晚上|wǎnshang|buổi tối
+往|wǎng|hướng về
+为什么|wèishénme|tại sao
+问|wèn|hỏi
+问题|wèntí|vấn đề
+西瓜|xīguā|dưa hấu
+希望|xīwàng|hy vọng
+洗|xǐ|rửa, giặt
+小时|xiǎoshí|giờ đồng hồ
+笑|xiào|cười
+新|xīn|mới
+姓|xìng|họ
+休息|xiūxi|nghỉ ngơi
+雪|xuě|tuyết
+颜色|yánsè|màu sắc
+眼睛|yǎnjing|mắt
+羊肉|yángròu|thịt cừu
+药|yào|thuốc
+要|yào|muốn, cần
+也|yě|cũng
+一起|yìqǐ|cùng nhau
+一下|yíxià|một chút
+已经|yǐjīng|đã
+意思|yìsi|ý nghĩa
+因为|yīnwèi|bởi vì
+所以|suǒyǐ|cho nên
+阴|yīn|âm u
+游泳|yóuyǒng|bơi
+右边|yòubian|bên phải
+鱼|yú|cá
+远|yuǎn|xa
+运动|yùndòng|vận động
+再|zài|lại, nữa
+早上|zǎoshang|sáng sớm
+丈夫|zhàngfu|chồng
+找|zhǎo|tìm
+着|zhe|đang (trợ từ)
+真|zhēn|thật
+正在|zhèngzài|đang
+知道|zhīdào|biết
+准备|zhǔnbèi|chuẩn bị
+走|zǒu|đi bộ
+最|zuì|nhất
+左边|zuǒbian|bên trái`,
+3: `阿姨|āyí|dì, cô
+啊|a|à, ạ
+矮|ǎi|thấp
+爱好|àihào|sở thích
+安静|ānjìng|yên tĩnh
+把|bǎ|đem (giới từ)
+班|bān|lớp
+搬|bān|chuyển
+半|bàn|nửa
+办法|bànfǎ|cách, biện pháp
+办公室|bàngōngshì|văn phòng
+帮忙|bāngmáng|giúp đỡ
+包|bāo|túi, gói
+饱|bǎo|no
+北方|běifāng|phía bắc
+被|bèi|bị
+鼻子|bízi|mũi
+比较|bǐjiào|tương đối
+比赛|bǐsài|cuộc thi
+笔记本|bǐjìběn|sổ tay
+必须|bìxū|phải
+变化|biànhuà|thay đổi
+别人|biérén|người khác
+冰箱|bīngxiāng|tủ lạnh
+不但|búdàn|không những
+才|cái|mới
+菜单|càidān|thực đơn
+参加|cānjiā|tham gia
+草|cǎo|cỏ
+层|céng|tầng
+差|chà|kém, thiếu
+超市|chāoshì|siêu thị
+衬衫|chènshān|áo sơ mi
+成绩|chéngjì|thành tích
+城市|chéngshì|thành phố
+迟到|chídào|đến muộn
+除了|chúle|ngoài ra
+船|chuán|thuyền
+春|chūn|mùa xuân
+词典|cídiǎn|từ điển
+聪明|cōngmíng|thông minh
+打扫|dǎsǎo|quét dọn
+打算|dǎsuàn|dự định
+带|dài|mang
+担心|dānxīn|lo lắng
+蛋糕|dàngāo|bánh ngọt
+当然|dāngrán|đương nhiên
+灯|dēng|đèn
+地方|dìfang|nơi chốn
+地铁|dìtiě|tàu điện ngầm
+地图|dìtú|bản đồ
+电梯|diàntī|thang máy
+电子邮件|diànzǐ yóujiàn|email
+东|dōng|phía đông
+冬|dōng|mùa đông
+动物|dòngwù|động vật
+短|duǎn|ngắn
+段|duàn|đoạn
+锻炼|duànliàn|rèn luyện
+多么|duōme|biết bao
+饿|è|đói
+耳朵|ěrduo|tai
+发|fā|gửi, phát
+发烧|fāshāo|sốt
+发现|fāxiàn|phát hiện
+方便|fāngbiàn|tiện lợi
+放|fàng|đặt, để
+放心|fàngxīn|yên tâm
+附近|fùjìn|gần đây
+复习|fùxí|ôn tập
+干净|gānjìng|sạch sẽ
+敢|gǎn|dám
+感冒|gǎnmào|cảm lạnh
+刚才|gāngcái|vừa nãy
+根据|gēnjù|căn cứ
+跟|gēn|cùng, theo
+更|gèng|hơn nữa
+公园|gōngyuán|công viên
+故事|gùshi|câu chuyện
+刮风|guāfēng|gió thổi
+关|guān|đóng
+关系|guānxi|quan hệ
+关心|guānxīn|quan tâm
+关于|guānyú|về
+国家|guójiā|quốc gia
+果汁|guǒzhī|nước ép
+过去|guòqù|quá khứ, đi qua
+还是|háishi|hay là
+害怕|hàipà|sợ
+黑板|hēibǎn|bảng đen
+后来|hòulái|sau đó
+护照|hùzhào|hộ chiếu
+画|huà|vẽ
+坏|huài|hỏng, xấu
+欢迎|huānyíng|hoan nghênh
+环境|huánjìng|môi trường
+换|huàn|đổi
+回答|huídá|trả lời
+会议|huìyì|cuộc họp
+或者|huòzhě|hoặc
+几乎|jīhū|hầu như
+机会|jīhuì|cơ hội
+极|jí|cực kỳ
+记得|jìde|nhớ
+季节|jìjié|mùa
+检查|jiǎnchá|kiểm tra
+简单|jiǎndān|đơn giản
+健康|jiànkāng|khỏe mạnh
+见面|jiànmiàn|gặp mặt
+讲|jiǎng|nói, giảng
+教|jiāo|dạy
+角|jiǎo|hào, góc
+脚|jiǎo|bàn chân
+接|jiē|đón, nhận
+街道|jiēdào|đường phố
+结婚|jiéhūn|kết hôn
+结束|jiéshù|kết thúc
+节目|jiémù|chương trình
+节日|jiérì|ngày lễ
+解决|jiějué|giải quyết
+借|jiè|mượn
+经常|jīngcháng|thường xuyên
+经过|jīngguò|đi qua
+经理|jīnglǐ|giám đốc
+久|jiǔ|lâu
+旧|jiù|cũ
+句子|jùzi|câu
+决定|juédìng|quyết định
+可爱|kě'ài|đáng yêu
+渴|kě|khát
+刻|kè|khắc (15 phút)
+客人|kèrén|khách
+空调|kōngtiáo|điều hòa
+口|kǒu|miệng
+哭|kū|khóc
+裤子|kùzi|quần
+筷子|kuàizi|đũa
+蓝|lán|xanh dương
+老|lǎo|già
+离开|líkāi|rời đi
+礼物|lǐwù|quà
+历史|lìshǐ|lịch sử
+脸|liǎn|mặt
+练习|liànxí|luyện tập
+辆|liàng|chiếc (xe)
+聊天|liáotiān|trò chuyện
+了解|liǎojiě|hiểu rõ
+邻居|línjū|hàng xóm
+楼|lóu|tòa nhà, tầng
+绿|lǜ|xanh lá
+马|mǎ|ngựa
+马上|mǎshàng|ngay lập tức
+满意|mǎnyì|hài lòng
+帽子|màozi|mũ
+米|mǐ|mét; gạo
+面包|miànbāo|bánh mì
+明白|míngbai|hiểu
+拿|ná|cầm
+奶奶|nǎinai|bà nội
+南|nán|phía nam
+难|nán|khó
+难过|nánguò|buồn
+年级|niánjí|khối lớp
+年轻|niánqīng|trẻ
+鸟|niǎo|chim
+努力|nǔlì|cố gắng
+爬山|páshān|leo núi
+盘子|pánzi|cái đĩa
+胖|pàng|béo
+啤酒|píjiǔ|bia
+皮鞋|píxié|giày da
+瓶子|píngzi|cái chai
+其实|qíshí|thực ra
+其他|qítā|khác
+奇怪|qíguài|kỳ lạ
+骑|qí|cưỡi, đạp
+起飞|qǐfēi|cất cánh
+清楚|qīngchu|rõ ràng
+请假|qǐngjià|xin nghỉ
+秋|qiū|mùa thu
+裙子|qúnzi|váy
+然后|ránhòu|sau đó
+热情|rèqíng|nhiệt tình
+认为|rènwéi|cho rằng
+认真|rènzhēn|nghiêm túc
+容易|róngyì|dễ
+如果|rúguǒ|nếu
+伞|sǎn|ô, dù
+上网|shàngwǎng|lên mạng
+生气|shēngqì|tức giận
+声音|shēngyīn|âm thanh
+世界|shìjiè|thế giới
+试|shì|thử
+瘦|shòu|gầy
+叔叔|shūshu|chú
+舒服|shūfu|thoải mái
+树|shù|cây
+数学|shùxué|toán học
+刷牙|shuāyá|đánh răng
+双|shuāng|đôi
+水平|shuǐpíng|trình độ
+司机|sījī|tài xế
+太阳|tàiyáng|mặt trời
+特别|tèbié|đặc biệt
+疼|téng|đau
+提高|tígāo|nâng cao
+体育|tǐyù|thể dục
+甜|tián|ngọt
+条|tiáo|sợi, con (lượng từ)
+同事|tóngshì|đồng nghiệp
+同意|tóngyì|đồng ý
+头发|tóufa|tóc
+突然|tūrán|đột nhiên
+图书馆|túshūguǎn|thư viện
+腿|tuǐ|chân, đùi
+完成|wánchéng|hoàn thành
+碗|wǎn|cái bát
+万|wàn|vạn
+忘记|wàngjì|quên
+为了|wèile|để
+位|wèi|vị (lượng từ)
+文化|wénhuà|văn hóa
+西|xī|phía tây
+习惯|xíguàn|thói quen
+洗手间|xǐshǒujiān|nhà vệ sinh
+洗澡|xǐzǎo|tắm
+夏|xià|mùa hè
+先|xiān|trước
+相信|xiāngxìn|tin tưởng
+香蕉|xiāngjiāo|chuối
+向|xiàng|hướng về
+像|xiàng|giống
+小心|xiǎoxīn|cẩn thận
+校长|xiàozhǎng|hiệu trưởng
+新闻|xīnwén|tin tức
+新鲜|xīnxiān|tươi
+信用卡|xìnyòngkǎ|thẻ tín dụng
+行李箱|xínglǐxiāng|vali
+熊猫|xióngmāo|gấu trúc
+需要|xūyào|cần
+选择|xuǎnzé|lựa chọn
+要求|yāoqiú|yêu cầu
+爷爷|yéye|ông nội
+一般|yìbān|thông thường
+一边|yìbiān|vừa... vừa...
+一定|yídìng|nhất định
+一共|yígòng|tổng cộng
+一会儿|yíhuìr|một lát
+一样|yíyàng|giống nhau
+一直|yìzhí|luôn luôn
+以前|yǐqián|trước đây
+以为|yǐwéi|tưởng rằng
+音乐|yīnyuè|âm nhạc
+银行|yínháng|ngân hàng
+饮料|yǐnliào|đồ uống
+应该|yīnggāi|nên
+影响|yǐngxiǎng|ảnh hưởng
+用|yòng|dùng
+游戏|yóuxì|trò chơi
+有名|yǒumíng|nổi tiếng
+又|yòu|lại
+遇到|yùdào|gặp phải
+愿意|yuànyì|bằng lòng
+月亮|yuèliang|mặt trăng
+越|yuè|càng
+站|zhàn|đứng; trạm
+张|zhāng|tờ (lượng từ)
+照顾|zhàogù|chăm sóc
+照片|zhàopiàn|ảnh
+照相机|zhàoxiàngjī|máy ảnh
+只|zhǐ|chỉ
+中间|zhōngjiān|ở giữa
+中文|Zhōngwén|tiếng Trung
+终于|zhōngyú|cuối cùng
+种|zhǒng|loại
+重要|zhòngyào|quan trọng
+周末|zhōumò|cuối tuần
+主要|zhǔyào|chủ yếu
+注意|zhùyì|chú ý
+自己|zìjǐ|bản thân
+自行车|zìxíngchē|xe đạp
+总是|zǒngshì|luôn luôn
+嘴|zuǐ|miệng
+最后|zuìhòu|cuối cùng
+最近|zuìjìn|gần đây
+作业|zuòyè|bài tập`
+};
+const VOCAB = {};
+for (const lv of [1,2,3]) {
+  VOCAB[lv] = RAW[lv].trim().split("\n").map(l => {
+    const [h, py, vi] = l.split("|");
+    return {h: h.trim(), py: py.trim().toLowerCase(), vi: vi.trim(), lv};
+  });
+}
+
+/* ================= PINYIN ================= */
+const TONE = {'ā':'a','á':'a','ǎ':'a','à':'a','ē':'e','é':'e','ě':'e','è':'e','ī':'i','í':'i','ǐ':'i','ì':'i',
+  'ō':'o','ó':'o','ǒ':'o','ò':'o','ū':'u','ú':'u','ǔ':'u','ù':'u','ǖ':'v','ǘ':'v','ǚ':'v','ǜ':'v','ü':'v'};
+const norm = c => TONE[c] || c;
+const VOW = "aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ";
+const isV = c => !!c && VOW.includes(c);
+function splitSyl(py) {
+  const out = [];
+  for (const part of py.split(/[\s']+/)) {
+    let i = 0;
+    while (i < part.length) {
+      let j = i;
+      const m = part.slice(i).match(/^[eēéěè]r/);
+      if (m) { j = i + 2; }
+      else {
+        const two = part.slice(j, j + 2);
+        if (two === "zh" || two === "ch" || two === "sh") j += 2;
+        else if ("bpmfdtnlgkhjqxrzcsyw".includes(part[j])) j++;
+        while (isV(part[j])) j++;
+        if (part[j] === "n") {
+          if (part[j+1] === "g" && !isV(part[j+2])) j += 2;
+          else if (!isV(part[j+1])) j += 1;
+        }
+        if (part[j] === "r" && j === part.length - 1) j++;
+        if (j === i) j++;
+      }
+      out.push(part.slice(i, j));
+      i = j;
+    }
+  }
+  return out;
+}
+const matchCh = (typed, n) => typed === n || (n === "v" && typed === "u");
+
+/* ================= LƯU TRỮ / BẢNG XẾP HẠNG ================= */
+const LB_KEY = "muatuvung_lb_v2", NAME_KEY = "muatuvung_name", LV_KEY = "muatuvung_lv";
+let memStore = {};
+const store = {
+  get(k) { try { const v = localStorage.getItem(k); return v; } catch (e) { return memStore[k] ?? null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { memStore[k] = v; } }
+};
+const $ = id => document.getElementById(id);
+let remote = [];
+const validE = e => e && e.id && e.name && [1,2,3].includes(e.lv) && typeof e.score === "number";
+function allEntries() { const m = new Map(); for (const e of loadLB()) m.set(e.id, e); for (const e of remote) m.set(e.id, e); return [...m.values()]; }
+let onlineOK = null, lastErr = "";
+const dbURL = p => ONLINE_DB.replace(/\/+$/, "") + p;
+async function pullRemote() {
+  if (!ONLINE_DB) return;
+  try { const r = await fetch(dbURL("/scores.json")); if (!r.ok) throw new Error("HTTP " + r.status); const d = await r.json() || {}; remote = Object.values(d).filter(validE); onlineOK = true; }
+  catch (e) { onlineOK = false; lastErr = (e && e.message) || "lỗi không rõ"; }
+  updStatus();
+}
+async function syncPending() {
+  if (!ONLINE_DB) return;
+  const lb = loadLB(); let ch = false;
+  for (const e of lb) if (!e.sent) {
+    try { const {sent, ...clean} = e;
+      const r = await fetch(dbURL("/scores/" + e.id + ".json"), {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(clean)});
+      if (!r.ok) throw 0; e.sent = true; ch = true; } catch (err) { break; }
+  }
+  if (ch) saveLB(lb);
+}
+function updStatus() {
+  const el = $("lbStat"); if (!el) return;
+  el.textContent = !ONLINE_DB ? "⚪ Điểm chỉ lưu trên máy này"
+    : onlineOK === null ? "🔄 Đang kết nối bảng chung…"
+    : onlineOK ? "🟢 Bảng chung cả lớp · tự cập nhật"
+    : "🟠 Chưa kết nối được bảng chung (" + lastErr + (location.protocol === "file:" || location.protocol.startsWith("http") ? "" : " · hãy tải file về máy rồi mở bằng Chrome/Edge") + ") · điểm lưu tạm, sẽ tự gửi sau";
+}
+const loadLB = () => { try { return JSON.parse(store.get(LB_KEY) || "[]"); } catch (e) { return []; } };
+const saveLB = a => store.set(LB_KEY, JSON.stringify(a));
+const keyOf = n => n.trim().toLowerCase();
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function bestPerStudent(entries, lv) {
+  const m = new Map();
+  for (const e of entries) {
+    if (e.lv !== lv) continue;
+    const k = keyOf(e.name), cur = m.get(k);
+    if (!cur) m.set(k, {...e, tries: 1});
+    else {
+      const tries = cur.tries + 1;
+      if (e.score > cur.score || (e.score === cur.score && e.time < cur.time)) m.set(k, {...e, tries});
+      else cur.tries = tries;
+    }
+  }
+  return [...m.values()].sort((a, b) => b.score - a.score || a.time - b.time);
+}
+const fmtT = s => s >= 60 ? Math.floor(s/60) + "p" + String(Math.round(s%60)).padStart(2,"0") + "s" : Math.round(s) + "s";
+function renderLB(el, tab, me) {
+  const all = allEntries(), meK = me ? keyOf(me) : null;
+  let rows, html;
+  const medal = i => i < 3 ? `<span class="medal rk${i+1}">${["🥇","🥈","🥉"][i]}</span>` : `<span class="medal" style="color:var(--muted)">${i+1}</span>`;
+  {
+    rows = bestPerStudent(all, +tab).slice(0, 15);
+    if (!rows.length) { el.innerHTML = `<div class="empty">Chưa có ai chơi HSK ${tab}. Hãy là người đầu tiên! 🚀</div>`; return; }
+    html = `<table class="lb"><tr><th>#</th><th>Học sinh</th><th class="r">Điểm</th><th class="r">Qua màn</th><th class="r">Chính xác</th><th class="r">Thời gian</th></tr>` +
+      rows.map((r, i) => `<tr class="${keyOf(r.name)===meK?"me":""}"><td>${medal(i)}</td><td><span class="lbname">${esc(r.name)}</span><span class="chip">${r.tries} lượt</span></td>` +
+      `<td class="r"><b>${r.score}</b></td><td class="r">${r.clear == null ? "–" : r.clear + "/" + STAGES}</td><td class="r">${r.acc}%</td><td class="r">${fmtT(r.time)}</td></tr>`).join("") + `</table>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ================= ÂM THANH ================= */
+let actx = null, muted = false;
+function beep(f, d = .09, type = "sine", v = .05, when = 0) {
+  if (muted) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime + when, o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = f; g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + d);
+  } catch (e) {}
+}
+const sfx = {
+  key: () => beep(520, .04, "square", .02),
+  ok: c => { beep(660 + Math.min(c, 10) * 30, .1, "triangle", .06); beep(990 + Math.min(c, 10) * 30, .12, "triangle", .05, .07); },
+  bad: () => beep(150, .15, "sawtooth", .05),
+  miss: () => { beep(220, .2, "sawtooth", .06); beep(150, .3, "sawtooth", .06, .12); },
+  win: () => [523, 659, 784, 1047].forEach((f, i) => beep(f, .2, "triangle", .06, i * .12)),
+  lose: () => [392, 330, 262, 196].forEach((f, i) => beep(f, .25, "sawtooth", .05, i * .15)),
+};
+
+/* ================= TRẠNG THÁI & DOM ================= */
+const screens = ["start", "game", "end"];
+const show = id => screens.forEach(s => $(s).classList.toggle("active", s === id));
+
+let selLv = +(store.get(LV_KEY) || 0), lbTab = String(selLv || 1);
+const STAGES = 3, PER = 30, TOTAL = STAGES * PER, MAX_LIVES = 5;
+// Thời gian rơi (giây) và khoảng cách sinh từ (ms). Mỗi màn 30 từ chia 3 chặng:
+//   từ 1-10: chậm · từ 11-20: tăng dần · từ 21-30: nhanh (như bản gốc). Mỗi màn sau lại nhanh hơn 5%.
+const SPEED = {
+  1: {slow: 28, fast: [17, 11], gSlow: 6200, gFast: [4300, 3500]},
+  2: {slow: 25, fast: [15, 9.5], gSlow: 5600, gFast: [4000, 3200]},
+  3: {slow: 22, fast: [13, 8.5], gSlow: 5000, gFast: [3700, 3000]},
+};
+function tier(slow, fast, i) { // i = thứ tự từ trong màn (0..29)
+  if (i < 10) return slow;
+  if (i < 20) return lerp(slow, fast[0], Math.min(1, (i - 9) / 8)); // từ 11-20: nhanh dần, chạm tốc độ nhanh từ từ thứ 18
+  return lerp(fast[0], fast[1], (i - 20) / 9);
+}
+const stageK = st => 1 - 0.05 * (st - 1);
+const fallFor = (lv, i, st) => tier(SPEED[lv].slow, SPEED[lv].fast, i) * stageK(st);
+const gapFor = (lv, i, st) => tier(SPEED[lv].gSlow, SPEED[lv].gFast, i) * stageK(st);
+let G = null; // game state
+
+function setupStart() {
+  [1,2,3].forEach(l => $("n" + l).textContent = VOCAB[l].length + " từ");
+  if (!$("nameInput").value) $("nameInput").value = store.get(NAME_KEY) || "";
+  document.querySelectorAll(".lv").forEach(b => b.classList.toggle("sel", +b.dataset.lv === selLv));
+  const tabs = [["1","HSK 1"],["2","HSK 2"],["3","HSK 3"]];
+  $("lbTabs").innerHTML = tabs.map(([k, t]) => `<button class="tab ${k===lbTab?"on":""}" data-t="${k}">${t}</button>`).join("");
+  renderLB($("lbBody"), lbTab, $("nameInput").value);
+}
+$("lbTabs").addEventListener("click", e => {
+  const t = e.target.closest(".tab"); if (!t) return;
+  lbTab = t.dataset.t; setupStart();
+});
+$("levels").addEventListener("click", e => {
+  const b = e.target.closest(".lv"); if (!b) return;
+  selLv = +b.dataset.lv; $("err").textContent = "";
+  document.querySelectorAll(".lv").forEach(x => x.classList.toggle("sel", x === b));
+  lbTab = String(selLv); setupStart();
+});
+$("nameInput").addEventListener("input", () => { $("err").textContent = ""; renderLB($("lbBody"), lbTab, $("nameInput").value); });
+$("nameInput").addEventListener("keydown", e => { if (e.key === "Enter") $("goBtn").click(); });
+$("goBtn").addEventListener("click", () => {
+  const name = $("nameInput").value.trim().replace(/\s+/g, " ");
+  if (!name) { $("err").textContent = "Em hãy nhập tên trước nhé!"; $("nameInput").focus(); return; }
+  if (!selLv) { $("err").textContent = "Em hãy chọn cấp độ HSK."; return; }
+  store.set(NAME_KEY, name); store.set(LV_KEY, String(selLv));
+  startGame(name, selLv);
+});
+
+/* export / import / clear */
+$("btnExport").onclick = () => {
+  const blob = new Blob([JSON.stringify(loadLB(), null, 1)], {type: "application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "bang-xep-hang-mua-tu-vung.json"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+$("btnImport").onclick = () => $("fileImport").click();
+$("fileImport").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const inc = JSON.parse(await f.text());
+    if (!Array.isArray(inc)) throw 0;
+    const cur = loadLB(), seen = new Set(cur.map(x => x.id));
+    let n = 0;
+    for (const x of inc) if (x && x.id && x.name && x.lv && typeof x.score === "number" && !seen.has(x.id)) { cur.push(x); seen.add(x.id); n++; }
+    saveLB(cur); setupStart(); alert("Đã gộp thêm " + n + " lượt chơi.");
+  } catch (err) { alert("File không hợp lệ."); }
+  e.target.value = "";
+};
+$("btnClear").onclick = () => {
+  if (confirm("Xoá dữ liệu bảng xếp hạng đang lưu trên máy này? (Điểm đã gửi lên bảng chung online vẫn còn, muốn xoá phải xoá trong Firebase.)")) { saveLB([]); setupStart(); }
+};
+
+/* ================= GAME ================= */
+const field = $("field");
+function lerp(a, b, t) { return a + (b - a) * t; }
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function startGame(name, lv) {
+  field.querySelectorAll(".card,.pop").forEach(n => n.remove());
+  let pool = shuffle(VOCAB[lv].slice()); if (pool.length < TOTAL) pool = pool.concat(shuffle(VOCAB[lv].slice()).slice(0, TOTAL - pool.length)); pool = pool.slice(0, TOTAL);
+  G = {name, lv, queue: pool, spawned: 0, resolved: 0, correct: 0, lives: MAX_LIVES, score: 0, combo: 0, maxCombo: 0,
+       keys: 0, goodKeys: 0, cards: [], target: null, missed: [], lastSpawn: 0, state: "count", stage: 1, elapsed: 0, last: 0, id: 0};
+  $("who").textContent = name; $("whoLv").textContent = "HSK " + lv; $("lvTag").textContent = "HSK " + lv;
+  $("last").textContent = ""; $("ovPause").classList.remove("show"); $("ovStage").classList.remove("show");
+  updHUD(); updTyped(); show("game"); resizeRain();
+  runCountdown();
+}
+function runCountdown() {
+  const ov = $("ovCount"), c = $("count"); ov.classList.add("show");
+  let n = 3; c.textContent = n; beep(440, .12, "square", .04);
+  const iv = setInterval(() => {
+    n--;
+    if (n > 0) { c.textContent = n; beep(440, .12, "square", .04); }
+    else { clearInterval(iv); ov.classList.remove("show"); beep(880, .2, "square", .05);
+      G.state = "play"; G.last = performance.now(); G.lastSpawn = -99999; $("hiddenIn").focus(); requestAnimationFrame(loop); }
+  }, 800);
+}
+function updHUD() {
+  $("score").textContent = G.score;
+  const done = G.resolved - (G.stage - 1) * PER;
+  $("mk").textContent = done; $("stg").textContent = G.stage;
+  $("prog").style.width = (done / PER * 100) + "%";
+  $("hearts").innerHTML = Array.from({length: MAX_LIVES}, (_, i) => `<span class="${i < G.lives ? "" : "off"}">❤</span>`).join("");
+  $("combo").textContent = G.combo >= 2 ? "🔥 x" + G.combo : "";
+  $("acc").textContent = G.keys ? Math.round(G.goodKeys / G.keys * 100) + "%" : "";
+}
+function updTyped(bad) {
+  const t = $("typed"), c = G && G.target;
+  if (c) { t.className = "typed" + (bad ? " bad" : ""); t.textContent = c.letters.slice(0, c.typed).map(l => l.t).join("").toUpperCase(); }
+  else { t.className = "typed ph" + (bad ? " bad" : ""); t.textContent = "Gõ pinyin của từ đang rơi…"; }
+}
+
+const idx = () => G.spawned - (G.stage - 1) * PER;
+function spawn() {
+  const i0 = idx(); const w = G.queue[G.spawned++]; if (!w) return;
+  const syl = splitSyl(w.py), letters = [];
+  syl.forEach((s, si) => [...s].forEach(ch => letters.push({o: ch, n: norm(ch), s: si, t: ""})));
+  const el = document.createElement("div"); el.className = "card";
+  const vi = document.createElement("div"); vi.className = "vi"; vi.textContent = w.vi;
+  const py = document.createElement("div"); py.className = "py";
+  const chEls = [];
+  syl.forEach((s, si) => {
+    const sp = document.createElement("span"); sp.className = "syl";
+    [...s].forEach(() => { const c = document.createElement("span"); c.className = "ch"; c.textContent = " "; sp.appendChild(c); chEls.push(c); });
+    py.appendChild(sp);
+  });
+  el.append(vi, py); field.appendChild(el);
+  const cw = el.offsetWidth, ch = el.offsetHeight, W = field.clientWidth, H = field.clientHeight;
+  // chọn x ít chồng lên các thẻ đang ở gần phía trên
+  let bestX = 0, bestScore = -1;
+  const near = G.cards.filter(c => c.y < ch * 2.2);
+  for (let k = 0; k < 14; k++) {
+    const x = 8 + Math.random() * Math.max(0, W - cw - 16);
+    let d = 1e9; for (const c of near) d = Math.min(d, Math.abs(c.x + c.w / 2 - (x + cw / 2)) - (c.w + cw) / 2);
+    if (d > bestScore) { bestScore = d; bestX = x; }
+  }
+  const fall = fallFor(G.lv, i0, G.stage) * (0.94 + Math.random() * .12);
+  const card = {id: ++G.id, w, el, chEls, letters, typed: 0, x: bestX, y: -ch, cw, ch, vy: (H + ch) / fall, fall, spawnT: G.elapsed};
+  G.cards.push(card); renderCard(card); place(card);
+}
+function place(c) { c.el.style.transform = `translate(${c.x}px,${c.y}px)`; c.w_ = c.cw; c.w = c.w; }
+function renderCard(c) {
+  c.letters.forEach((l, i) => { const e = c.chEls[i];
+    if (i < c.typed) { e.textContent = l.o; e.className = "ch on"; }
+    else if (i === 0) { e.textContent = l.o; e.className = "ch hint"; }
+    else { e.textContent = "\u00A0"; e.className = "ch"; } });
+  c.el.classList.toggle("locked", G.target === c);
+}
+/* fix: card.w is vocab, width is cw */
+function lockTarget(c) { const old = G.target; G.target = c; if (old) renderCard(old); renderCard(c); }
+function unlock() { const old = G.target; G.target = null; if (old) renderCard(old); }
+
+function pickByFirst(ch) {
+  let best = null;
+  for (const c of G.cards) {
+    if (c.typed === 0 && matchCh(ch, c.letters[0].n)) if (!best || c.y > best.y) best = c;
+  }
+  return best;
+}
+function handleChar(ch) {
+  if (!G || G.state !== "play") return;
+  ch = ch.toLowerCase(); if (!/^[a-z]$/.test(ch)) return;
+  G.keys++;
+  let c = G.target;
+  if (!c) { c = pickByFirst(ch); if (c) lockTarget(c); }
+  if (c && matchCh(ch, c.letters[c.typed].n)) {
+    G.goodKeys++; c.letters[c.typed].t = ch; c.typed++; sfx.key(); renderCard(c);
+    if (c.typed === c.letters.length) hit(c);
+    updTyped(); updHUD();
+  } else {
+    G.combo = 0; sfx.bad(); updTyped(true); updHUD();
+    if (c) { c.el.classList.remove("shake"); void c.el.offsetWidth; c.el.classList.add("shake"); }
+    setTimeout(() => { if (G) updTyped(); }, 250);
+  }
+}
+function popText(txt, cls, x, y) {
+  const p = document.createElement("div"); p.className = "pop " + cls; p.textContent = txt; field.appendChild(p);
+  const w = p.offsetWidth, W = field.clientWidth;
+  p.style.transform = `translate(${Math.max(6, Math.min(W - w - 6, x - w / 2))}px,${y}px)`;
+  setTimeout(() => p.remove(), 1350);
+}
+function hit(c) {
+  G.combo++; G.maxCombo = Math.max(G.maxCombo, G.combo);
+  const left = Math.max(0, 1 - (G.elapsed - c.spawnT) / c.fall);
+  const pts = 100 + c.letters.length * 15 + Math.round(left * 120) + Math.min(G.combo, 10) * 12;
+  G.score += pts; G.correct++; G.resolved++;
+  sfx.ok(G.combo);
+  popText(`${c.w.h} · ${c.w.py}`, "ok", c.x + c.cw / 2, c.y);
+  burst(c.x + c.cw / 2, c.y + c.ch / 2 + 64);
+  $("last").textContent = `${c.w.h} · ${c.w.py} = ${c.w.vi}  (+${pts})`;
+  removeCard(c); updHUD(); checkEnd();
+}
+function removeCard(c) { c.el.remove(); G.cards = G.cards.filter(x => x !== c); if (G.target === c) { G.target = null; updTyped(); } }
+function missed(c) {
+  G.lives--; G.combo = 0; G.resolved++; G.missed.push(c.w); sfx.miss(); G.lastSpawn = G.elapsed * 1000 + 1500;
+  popText(`${c.w.h} · ${c.w.py}`, "bad", c.x + c.cw / 2, field.clientHeight - 60);
+  removeCard(c); updHUD(); checkEnd();
+}
+function checkEnd() {
+  if (G.state !== "play") return;
+  if (G.lives <= 0) return finish(false);
+  if (G.resolved >= G.stage * PER) stageDone();
+}
+function stageDone() {
+  G.state = "break";
+  const bonus = G.lives * 150; G.score += bonus; updHUD();
+  if (G.stage >= STAGES) return finish(true, bonus);
+  sfx.win();
+  $("stTitle").textContent = "🎉 Hoàn thành màn " + G.stage + "!";
+  $("stText").innerHTML = `Điểm: <b style="color:var(--yellow)">${G.score}</b>` + (bonus ? ` (thưởng mạng +${bonus})` : "") +
+    `<br>Màn ${G.stage + 1} sẽ nhanh hơn một chút. Được hồi đủ mạng ❤`;
+  $("btnNext").textContent = "Vào màn " + (G.stage + 1) + " ▶";
+  $("ovStage").classList.add("show");
+}
+$("btnNext").onclick = () => {
+  if (!G || G.state !== "break") return;
+  $("ovStage").classList.remove("show");
+  G.stage++; G.lives = MAX_LIVES; G.combo = 0; G.state = "count"; updHUD(); updTyped(); runCountdown();
+};
+
+function loop(now) {
+  if (!G || G.state !== "play") return;
+  const dt = Math.min(.05, (now - G.last) / 1000); G.last = now; G.elapsed += dt;
+  const H = field.clientHeight;
+  // sinh từ (chỉ sinh từ của màn hiện tại)
+  const gap = gapFor(G.lv, Math.min(PER - 1, idx()), G.stage);
+  if (G.spawned < G.stage * PER && G.cards.length < 4 && !G.cards.some(c => c.y < c.ch * 3.5) && (G.elapsed * 1000 - G.lastSpawn >= gap || (G.cards.length === 0 && G.elapsed * 1000 - G.lastSpawn > 500))) {
+    G.lastSpawn = G.elapsed * 1000; spawn();
+  }
+  for (const c of G.cards.slice()) {
+    c.y += c.vy * dt; place(c);
+    c.el.classList.toggle("near", c.y + c.ch > H * .8);
+    if (c.y + c.ch >= H) missed(c);
+  }
+  rainTick(dt);
+  if (G && G.state === "play") requestAnimationFrame(loop);
+}
+
+/* ---- input ---- */
+document.addEventListener("keydown", e => {
+  if (!G || G.state !== "play" || !$("game").classList.contains("active")) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "Escape") { e.preventDefault(); unlock(); updTyped(); return; }
+  if (e.key === "Backspace") {
+    e.preventDefault(); const c = G.target;
+    if (c) { c.typed = Math.max(0, c.typed - 1); renderCard(c); if (c.typed === 0) unlock(); updTyped(); }
+    return;
+  }
+  if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) { e.preventDefault(); handleChar(e.key); }
+});
+$("hiddenIn").addEventListener("input", e => { // dự phòng cho bàn phím ảo trên điện thoại
+  const v = e.target.value; e.target.value = "";
+  if (e.inputType === "deleteContentBackward") return;
+  for (const ch of v) handleChar(ch);
+});
+$("hiddenIn").addEventListener("keydown", e => {
+  if (e.key === "Backspace" && G && G.target) { const c = G.target; c.typed = Math.max(0, c.typed - 1); renderCard(c); if (!c.typed) unlock(); updTyped(); }
+});
+$("game").addEventListener("pointerdown", e => { if (!e.target.closest("button")) $("hiddenIn").focus(); });
+
+/* ---- pause ---- */
+function pause() { if (!G || G.state !== "play") return; G.state = "pause"; $("ovPause").classList.add("show"); }
+function resume() { if (!G || G.state !== "pause") return; $("ovPause").classList.remove("show"); G.state = "play"; G.last = performance.now(); $("hiddenIn").focus(); requestAnimationFrame(loop); }
+$("btnPause").onclick = pause; $("btnResume").onclick = resume;
+$("btnQuit").onclick = () => { G.state = "quit"; $("ovPause").classList.remove("show"); G = null; setupStart(); show("start"); };
+$("btnMute").onclick = () => { muted = !muted; $("btnMute").textContent = muted ? "🔇" : "🔊"; };
+document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
+window.addEventListener("blur", () => pause());
+
+/* ---- kết thúc ---- */
+function finish(win, bonus = 0) {
+  G.state = "end";
+  G.endBonus = bonus;
+  const acc = G.keys ? Math.round(G.goodKeys / G.keys * 100) : 0, time = Math.round(G.elapsed);
+  const entry = {id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: G.name, lv: G.lv, score: G.score,
+    correct: G.correct, acc, time, combo: G.maxCombo, clear: win ? STAGES : G.stage - 1, date: new Date().toISOString()};
+  const lb = loadLB(); lb.push({...entry, sent: false}); saveLB(lb); G.entry = entry;
+  win ? sfx.win() : sfx.lose();
+  $("endTitle").textContent = (win ? "🏅 Hoàn thành cả " + STAGES + " màn! " : "💔 Hết mạng ở màn " + G.stage + "! ") + "— " + G.name + " · HSK " + G.lv;
+  $("endScore").textContent = G.score;
+  $("sCorrect").textContent = G.correct + "/" + TOTAL; $("sAcc").textContent = acc + "%"; $("sCombo").textContent = G.maxCombo; $("sTime").textContent = fmtT(time);
+  const miss = G.missed.slice();
+  // thêm các từ còn đang rơi (nếu thua) vào danh sách ôn
+  if (!win) { for (const c of G.cards) miss.push(c.w); for (let i = G.spawned; i < G.stage * PER; i++) miss.push(G.queue[i]); }
+  $("reviewWrap").style.display = miss.length ? "block" : "none";
+  $("review").innerHTML = miss.map(w => `<div class="rv"><span class="h">${esc(w.h)}</span><span class="p">${esc(w.py)}</span><span class="m">${esc(w.vi)}</span></div>`).join("");
+  $("endLbTitle").textContent = "🏆 Bảng xếp hạng HSK " + G.lv;
+  updateEndRank(); lbTab = String(G.lv);
+  syncPending().then(pullRemote).then(updateEndRank);
+  field.querySelectorAll(".card,.pop").forEach(n => n.remove());
+  setTimeout(() => show("end"), 700);
+}
+function updateEndRank() {
+  if (!G || !G.entry) return; const e = G.entry;
+  const board = bestPerStudent(allEntries(), e.lv), pos = board.findIndex(r => keyOf(r.name) === keyOf(e.name)) + 1;
+  const isBest = board[pos - 1] && board[pos - 1].id === e.id;
+  $("endRank").innerHTML = `Hạng <b style="color:var(--yellow)">${pos}</b>/${board.length} bảng HSK ${e.lv}` + (isBest ? " · 🌟 <b>Kỷ lục mới của em!</b>" : "") + (G.endBonus ? ` · thưởng mạng +${G.endBonus}` : "") +
+    (ONLINE_DB ? (onlineOK ? " · ✅ đã lưu bảng chung" : " · ⏳ đang gửi điểm…") : "");
+  renderLB($("endLb"), String(e.lv), e.name);
+  updStatus();
+}
+$("btnAgain").onclick = () => startGame(G ? G.name : store.get(NAME_KEY), selLv);
+$("btnHome").onclick = () => { setupStart(); show("start"); };
+// btnAgain needs G alive: keep G after finish, only replaced on startGame
+
+/* ================= HIỆU ỨNG MƯA / HẠT ================= */
+const cv = $("rain"), cx = cv.getContext("2d");
+let drops = [], parts = [], DPR = 1;
+function resizeRain() {
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = cv.clientWidth * DPR; cv.height = cv.clientHeight * DPR;
+  const n = Math.round(cv.clientWidth / 9);
+  drops = Array.from({length: n}, () => ({x: Math.random() * cv.clientWidth, y: Math.random() * cv.clientHeight, l: 8 + Math.random() * 18, v: 260 + Math.random() * 420, a: .08 + Math.random() * .18}));
+}
+function burst(x, y) { // toạ độ trong #field -> canvas (field cách top 64px)
+  for (let i = 0; i < 22; i++) { const a = Math.random() * 6.283, s = 60 + Math.random() * 220;
+    parts.push({x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 40, life: .7 + Math.random() * .4, t: 0, c: Math.random() < .5 ? "#5fd4ff" : "#4dffa6"}); }
+}
+function rainTick(dt) {
+  const W = cv.clientWidth, H = cv.clientHeight;
+  cx.setTransform(DPR, 0, 0, DPR, 0, 0); cx.clearRect(0, 0, W, H);
+  cx.lineWidth = 1.2;
+  for (const d of drops) {
+    d.y += d.v * dt; if (d.y > H) { d.y = -d.l; d.x = Math.random() * W; }
+    cx.strokeStyle = `rgba(150,190,255,${d.a})`; cx.beginPath(); cx.moveTo(d.x, d.y); cx.lineTo(d.x - 1.5, d.y + d.l); cx.stroke();
+  }
+  for (const p of parts) { p.t += dt; p.vy += 420 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+  parts = parts.filter(p => p.t < p.life);
+  for (const p of parts) { cx.globalAlpha = 1 - p.t / p.life; cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x, p.y, 2.4, 0, 6.283); cx.fill(); }
+  cx.globalAlpha = 1;
+}
+window.addEventListener("resize", () => { if ($("game").classList.contains("active")) resizeRain(); });
+// mưa nền khi chưa chơi/tạm dừng
+setInterval(() => { if ($("game").classList.contains("active") && G && G.state !== "play") rainTick(.016); }, 16);
+
+setupStart(); updStatus();
+const refreshBoard = () => { if ($("start").classList.contains("active")) renderLB($("lbBody"), lbTab, $("nameInput").value); };
+if (ONLINE_DB) { syncPending().then(pullRemote).then(refreshBoard); setInterval(() => { if ($("start").classList.contains("active")) syncPending().then(pullRemote).then(refreshBoard); }, 20000); }
+</script>
+</body>
+</html>
